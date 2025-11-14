@@ -1,33 +1,38 @@
-# Welcome to React Router!
+<<<<<<< HEAD
+# AI_Resume_Analyzer
 
-A modern, production-ready template for building full-stack React applications using React Router.
+[![MIT License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+[![npm version](https://img.shields.io/badge/npm-v1.0.0-blue)]()
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://stackblitz.com/github/Lindex54/AI_Resume_Analyzer)
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+AI_Resume_Analyzer is an AI-powered assistant that analyzes your résumé against a job description and provides personalized suggestions to improve relevance, clarity, and ATS performance. It identifies missing keywords, enhances bullet points, and helps you present a stronger, job-ready résumé.
+
+This project is built on a **React Router template**, which provides a modern, production-ready setup for building full-stack React applications. The template includes server-side rendering, hot module replacement (HMR), asset bundling, TypeScript support, and TailwindCSS for styling.
+
+---
 
 ## Features
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+- Analyze résumé for missing keywords and optimize for ATS
+- Suggest improvements for clarity and relevance
+- Enhance bullet points to match job requirements
+- Provide actionable feedback for stronger job applications
+- Modern, user-friendly interface built with React and TailwindCSS
 
-## Getting Started
+---
 
-### Installation
+## Installation & Development
 
-Install the dependencies:
+Install dependencies:
 
 ```bash
 npm install
-```
+
+
+
+\
 
 ### Development
-
-Start the development server with HMR:
-
 ```bash
 npm run dev
 ```
@@ -84,4 +89,8 @@ This template comes with [Tailwind CSS](https://tailwindcss.com/) already config
 
 ---
 
-Built with ❤️ using React Router.
+Built with ❤️ using React, React Router, TailwindCSS, and AI technologies
+=======
+# AI_Resume_Analyzer
+An AI-powered assistant that analyzes your résumé against a job description and provides personalized suggestions to improve relevance, clarity, and ATS performance. It identifies missing keywords, enhances bullet points, and helps you present a stronger, job-ready résumé.
+>>>>>>> a0066075fb6a4555c5b07a3f2a019549f188ccda
