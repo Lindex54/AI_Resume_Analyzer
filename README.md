@@ -4,6 +4,10 @@
 [![MIT License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![npm version](https://img.shields.io/badge/npm-v1.0.0-blue)]()
 [![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://stackblitz.com/github/Lindex54/AI_Resume_Analyzer)
+![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-38B2AC?logo=tailwind-css&logoColor=white)
+![PuterJS](https://img.shields.io/badge/PuterJS-orange?logo=javascript&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
 
 AI_Resume_Analyzer is an AI-powered assistant that analyzes your résumé against a job description and provides personalized suggestions to improve relevance, clarity, and ATS performance. It identifies missing keywords, enhances bullet points, and helps you present a stronger, job-ready résumé.
 
