@@ -1,18 +1,31 @@
 import {useCallback, useState} from 'react'
 import {useDropzone} from 'react-dropzone'
+import {formatSize} from '../lib/utils'
 
 interface FileUploaderProps {
     onFileSelect?: (file: File | null) => void;
 }
 
 const FileUploader = ({onFileSelect}: FileUploaderProps) => {
-    const [file, setFile] = useState();
+    // const [file, setFile] = useState();
 
     const onDrop = useCallback((acceptedFiles:File[]) => {
         // Do something with the files
         const file:File = acceptedFiles[0] || null;
-    }, [])
-    const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
+
+        onFileSelect?.(file);
+    }, [onFileSelect]);
+
+    const maxFileSize = 20 * 1024 * 1024;
+
+    const {getRootProps, getInputProps, isDragActive, acceptedFiles} = useDropzone({
+        onDrop,
+        multiple: false,
+        accept: {'application/pdf': ['.pdf']},
+        maxSize: 20 * 1024 * 1024,
+    })
+
+    const file = acceptedFiles[0];
 
     return (
         <div className="w-full gradient-border">
@@ -24,7 +37,16 @@ const FileUploader = ({onFileSelect}: FileUploaderProps) => {
                    </div>
                    {
                        file ? (
-                           <div>
+                           <div className="flex items-center space-x-3">
+                               <img src="/images/pdf.png" alt="upload" className="size-10" />
+                               <div>
+                                   <p className="text-lg text-gray-700 font-medium truncate">
+                                       {file.name}
+                                   </p>
+                                   <p className="text-sm text-gray-500">
+                                       {formatSize(file.size)}
+                                   </p>
+                               </div>
 
                            </div>
                        ) : (
@@ -34,7 +56,7 @@ const FileUploader = ({onFileSelect}: FileUploaderProps) => {
                                        Click to upload
                                    </span> or drag and drop
                                </p>
-                               <p className="text-lg text-gray-500">PDF (max 200mb)</p>
+                               <p className="text-lg text-gray-500">PDF (max {formatSize(maxFileSize)})</p>
                            </div>
                        )}
 

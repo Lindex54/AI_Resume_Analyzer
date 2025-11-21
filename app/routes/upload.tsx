@@ -8,7 +8,7 @@ const Upload = () => {
     const [file, setFile] = useState<File | null>(null);
 
     const handleFileSelect = (file: File | null) => {
-
+        setFile(file);
     }
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {}
@@ -43,7 +43,7 @@ const Upload = () => {
                             </div>
                             <div className="form-div">
                                 <label htmlFor="uploader">Uploade Resume</label>
-                                <FileUploader />
+                                <FileUploader onFileSelect={handleFileSelect} />
                             </div>
                             <button className="primary-button" type="submit">Analyze Resume</button>
                         </form>
