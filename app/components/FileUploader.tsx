@@ -32,8 +32,8 @@ const FileUploader = ({onFileSelect}: FileUploaderProps) => {
             <div {...getRootProps()}>
                 <input {...getInputProps()} />
                <div className="space-y-4 cursor-pointer">
-                   <div className="mx-auto w-16 h-16 flex items-center justify-center">
-                       <img src = "/icons/info.svg" alt="upload" className="size-20" />
+                   <div className="mx-auto w-16 h-16 flex items-center justify-center mb-2">
+                       <img src ="/icons/info.svg" alt="upload" className="size-20" />
                    </div>
                    {
                        file ? (
@@ -47,7 +47,12 @@ const FileUploader = ({onFileSelect}: FileUploaderProps) => {
                                        {formatSize(file.size)}
                                    </p>
                                </div>
+                               <button className="p-2 cursor-pointer" onClick={(e) =>{
+                                   onFileSelect?.(null);
+                               }}>
 
+                                   <img src="/icons/cross.svg" alt="remove" className="w-4 h-4" />
+                               </button>
                            </div>
                        ) : (
                            <div>
