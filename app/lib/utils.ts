@@ -16,3 +16,5 @@ export function formatSize(bytes: number) : string {
     // Format with 2 decimal places and round
     return parseFloat( (bytes/Math.pow(k, i)).toFixed(2)+ ' ' + sizes[i]).toFixed(2);
 }
+
+export const generateUUID = () => crypto.randomUUID()
