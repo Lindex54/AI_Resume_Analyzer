@@ -18,6 +18,7 @@ const Resume = () => {
     const [imageUrl, setImageUrl] = useState('');
     const [resumeUrl, setResumeUrl] = useState('');
     const [feedback, setFeedback] = useState<Feedback | null>(null);
+    const [loadError, setLoadError] = useState<string | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -27,26 +28,45 @@ const Resume = () => {
 
     useEffect(() => {
         const loadResume = async () => {
-            const resume = await kv.get(`resume:${id}`);
+            try {
+                const resume = await kv.get(`resume:${id}`);
 
-            if(!resume) return;
-            const data = JSON.parse(resume);
+                if(!resume) {
+                    setLoadError("Resume analysis not found.");
+                    return;
+                }
+                const data = JSON.parse(resume);
 
-            const resumeBlob = await fs.read(data.resumePath);
-            if(!resumeBlob) return;
+                const resumeBlob = await fs.read(data.resumePath);
+                if(!resumeBlob) {
+                    setLoadError("Could not load the resume file.");
+                    return;
+                }
 
-            const pdfBlob = new Blob([resumeBlob], { type: 'application/pdf' });
-            const resumeUrl = URL.createObjectURL(pdfBlob);
-            setResumeUrl(resumeUrl);
+                const pdfBlob = new Blob([resumeBlob], { type: 'application/pdf' });
+                const resumeUrl = URL.createObjectURL(pdfBlob);
+                setResumeUrl(resumeUrl);
 
-            const imageBlob = await fs.read(data.imagePath);
-            if(!imageBlob) return;
+                const imageBlob = await fs.read(data.imagePath);
+                if(!imageBlob) {
+                    setLoadError("Could not load the preview image.");
+                    return;
+                }
 
-            const imageUrl = URL.createObjectURL(imageBlob);
-            setImageUrl(imageUrl);
+                const imageUrl = URL.createObjectURL(imageBlob);
+                setImageUrl(imageUrl);
 
-            setFeedback(data.feedback);
-            console.log({resumeUrl, imageUrl, feedback: data.feedback});
+                if (!data.feedback || typeof data.feedback !== "object") {
+                    setLoadError("Analysis data is missing or invalid.");
+                    return;
+                }
+
+                setFeedback(data.feedback);
+                setLoadError(null);
+                console.log({resumeUrl, imageUrl, feedback: data.feedback});
+            } catch {
+                setLoadError("Failed to load resume analysis.");
+            }
         }
 
         loadResume();
@@ -75,7 +95,11 @@ const Resume = () => {
                 </section>
                 <section className="feedback-section">
                     <h2 className="text-4xl !text-black font-bold">Resume Review</h2>
-                    {feedback ? (
+                    {loadError ? (
+                        <div className="bg-red-50 border border-red-200 rounded-xl p-4 mt-4">
+                            <p className="text-lg text-red-700">{loadError}</p>
+                        </div>
+                    ) : feedback ? (
                         <div className="flex flex-col gap-8 animate-in fade-in duration-1000">
                             <Summary feedback={feedback} />
                             <ATS score={feedback.ATS.score || 0} suggestions={feedback.ATS.tips || []} />
