@@ -2,6 +2,7 @@ import type { Route } from "./+types/home";
 import Navbar from "~/components/Navbar";
 import ResumeCard from "~/components/ResumeCard";
 import {usePuterStore} from "~/lib/puter";
+import {normalizeFeedback} from "~/lib/feedback";
 import {useNavigate, Link} from "react-router";
 import {useEffect, useState} from "react";
 
@@ -31,11 +32,15 @@ export default function Home() {
 
             const parsedResumes = resumes
                 ?.map((resume) => JSON.parse(resume.value) as Resume)
-                .filter((resume) =>
-                    resume?.feedback &&
-                    typeof resume.feedback === "object" &&
-                    typeof resume.feedback.overallScore === "number"
-                );
+                .map((resume) => {
+                    const normalizedFeedback = normalizeFeedback(resume.feedback);
+                    if (!normalizedFeedback) return null;
+                    return {
+                        ...resume,
+                        feedback: normalizedFeedback,
+                    } as Resume;
+                })
+                .filter((resume): resume is Resume => !!resume);
 
             console.log(parsedResumes);
             setResumes(parsedResumes || []);

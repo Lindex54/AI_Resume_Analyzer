@@ -5,6 +5,7 @@ import {usePuterStore} from "~/lib/puter";
 import {useNavigate} from "react-router";
 import {convertPdfToImage} from "~/lib/pdf2img";
 import {generateUUID} from "~/lib/utils";
+import {normalizeFeedback} from "~/lib/feedback";
 import {prepareInstructions} from "../../constants";
 
 const ANALYZE_TIMEOUT_MS = 120000;
@@ -53,24 +54,6 @@ const parseFeedbackFromResponse = (response: AIResponse): Feedback => {
     }
 };
 
-const isValidFeedback = (feedback: unknown): feedback is Feedback => {
-    if (!feedback || typeof feedback !== "object") return false;
-    const value = feedback as Partial<Feedback>;
-    return (
-        typeof value.overallScore === "number" &&
-        !!value.ATS &&
-        typeof value.ATS.score === "number" &&
-        !!value.toneAndStyle &&
-        typeof value.toneAndStyle.score === "number" &&
-        !!value.content &&
-        typeof value.content.score === "number" &&
-        !!value.structure &&
-        typeof value.structure.score === "number" &&
-        !!value.skills &&
-        typeof value.skills.score === "number"
-    );
-};
-
 const Upload = () => {
     const {isLoading, auth, fs, kv, ai} = usePuterStore();
     const navigate = useNavigate();
@@ -111,7 +94,8 @@ const Upload = () => {
 
             if (!response) throw new Error('Failed to analyze resume');
             const parsedFeedback = parseFeedbackFromResponse(response);
-            if (!isValidFeedback(parsedFeedback)) {
+            const normalizedFeedback = normalizeFeedback(parsedFeedback);
+            if (!normalizedFeedback) {
                 throw new Error("AI returned an invalid feedback structure.");
             }
 
@@ -124,7 +108,7 @@ const Upload = () => {
                 companyName,
                 jobTitle,
                 jobDescription,
-                feedback: parsedFeedback,
+                feedback: normalizedFeedback,
             };
 
             await kv.set(`resume:${uuid}`, JSON.stringify(data));

@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import {Link, useNavigate, useParams} from "react-router";
 import {usePuterStore} from "~/lib/puter";
+import {normalizeFeedback} from "~/lib/feedback";
 import Summary from "~/components/Summary";
 import ATS from "~/components/ATS";
 import Details from "~/components/Details";
@@ -56,14 +57,15 @@ const Resume = () => {
                 const imageUrl = URL.createObjectURL(imageBlob);
                 setImageUrl(imageUrl);
 
-                if (!data.feedback || typeof data.feedback !== "object") {
+                const normalizedFeedback = normalizeFeedback(data.feedback);
+                if (!normalizedFeedback) {
                     setLoadError("Analysis data is missing or invalid.");
                     return;
                 }
 
-                setFeedback(data.feedback);
+                setFeedback(normalizedFeedback);
                 setLoadError(null);
-                console.log({resumeUrl, imageUrl, feedback: data.feedback});
+                console.log({resumeUrl, imageUrl, feedback: normalizedFeedback});
             } catch {
                 setLoadError("Failed to load resume analysis.");
             }
