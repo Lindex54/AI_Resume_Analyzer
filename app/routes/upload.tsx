@@ -8,7 +8,7 @@ import {generateUUID} from "~/lib/utils";
 import {normalizeFeedback} from "~/lib/feedback";
 import {prepareInstructions} from "../../constants";
 
-const ANALYZE_TIMEOUT_MS = 120000;
+const ANALYZE_TIMEOUT_MS = 45000;
 
 const withTimeout = async <T,>(promise: Promise<T>, timeoutMs: number): Promise<T> => {
     return Promise.race([
@@ -54,6 +54,17 @@ const parseFeedbackFromResponse = (response: AIResponse): Feedback => {
     }
 };
 
+const isAllZeroFeedback = (feedback: Feedback): boolean => {
+    return (
+        feedback.overallScore === 0 &&
+        feedback.ATS.score === 0 &&
+        feedback.toneAndStyle.score === 0 &&
+        feedback.content.score === 0 &&
+        feedback.structure.score === 0 &&
+        feedback.skills.score === 0
+    );
+};
+
 const Upload = () => {
     const {isLoading, auth, fs, kv, ai} = usePuterStore();
     const navigate = useNavigate();
@@ -83,20 +94,38 @@ const Upload = () => {
             const uploadedImage = await fs.upload([imageFile.file]);
             if(!uploadedImage) throw new Error('Failed to upload image');
 
-            setStatusText('Analyzing...');
+            const baseInstructions = `${prepareInstructions({jobTitle, jobDescription})}
+Use realistic ATS-style scoring based on resume quality.
+Do not return all scores as zero unless the uploaded file is unreadable or blank.`;
+
+            setStatusText("Analyzing...");
             const response = await withTimeout(
-                ai.feedback(
-                    uploadedFile.path,
-                    prepareInstructions({jobTitle, jobDescription})
-                ),
+                ai.feedback(uploadedFile.path, baseInstructions),
                 ANALYZE_TIMEOUT_MS
             );
+            if (!response) throw new Error("Failed to analyze resume.");
 
-            if (!response) throw new Error('Failed to analyze resume');
             const parsedFeedback = parseFeedbackFromResponse(response);
-            const normalizedFeedback = normalizeFeedback(parsedFeedback);
-            if (!normalizedFeedback) {
-                throw new Error("AI returned an invalid feedback structure.");
+            let normalizedFeedback = normalizeFeedback(parsedFeedback);
+
+            if (!normalizedFeedback || isAllZeroFeedback(normalizedFeedback)) {
+                setStatusText("Re-analyzing...");
+                const retryResponse = await withTimeout(
+                    ai.feedback(
+                        uploadedFile.path,
+                        `${baseInstructions}
+Return meaningful section scores even when the resume is weak.`
+                    ),
+                    ANALYZE_TIMEOUT_MS
+                );
+                if (!retryResponse) throw new Error("Failed to analyze resume.");
+
+                const retryParsedFeedback = parseFeedbackFromResponse(retryResponse);
+                normalizedFeedback = normalizeFeedback(retryParsedFeedback);
+            }
+
+            if (!normalizedFeedback || isAllZeroFeedback(normalizedFeedback)) {
+                throw new Error("AI returned invalid or all-zero feedback.");
             }
 
             setStatusText('Saving analysis...');
@@ -112,7 +141,7 @@ const Upload = () => {
             };
 
             await kv.set(`resume:${uuid}`, JSON.stringify(data));
-            setStatusText('Analyzing complete, redirecting...');
+            setStatusText("Analysis complete, redirecting...");
             navigate(`/resume/${uuid}`);
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : "Resume analysis failed.";
@@ -138,10 +167,10 @@ const Upload = () => {
     }
 
     return (
-        <main className="bg-[url('/images/bg-main.svg')] bg-cover ">
+        <main className="app-bg">
             <Navbar />
             <section className="main-section">
-                <div className="page-heading py-16">
+                <div className="page-heading py-12">
                     <h1>Smart feedback for your dream job</h1>
                     {isProcessing?(
                             <>

@@ -10,12 +10,12 @@ const ATS = ({
     return (
         <div
             className={cn(
-                "rounded-2xl shadow-md w-full bg-gradient-to-b to-light-white p-8 flex flex-col gap-4",
+                "rounded-2xl w-full p-8 flex flex-col gap-4 border shadow-sm",
                 score > 69
-                    ? "from-green-100"
+                    ? "bg-green-50 border-green-300"
                     : score > 49
-                        ? "from-yellow-100"
-                        : "from-red-100"
+                        ? "bg-yellow-50 border-yellow-300"
+                        : "bg-red-50 border-red-300"
             )}
         >
             <div className="flex flex-row gap-4 items-center">
@@ -30,18 +30,18 @@ const ATS = ({
                     alt="ATS"
                     className="w-10 h-10"
                 />
-                <p className="text-2xl font-semibold">ATS Score - {score}/100</p>
+                <p className="text-2xl font-semibold text-slate-950">ATS Score - {score}/100</p>
             </div>
             <div className="flex flex-col gap-2">
-                <p className="font-medium text-xl">
+                <p className="font-medium text-xl text-slate-900">
                     How well does your resume pass through Applicant Tracking Systems?
                 </p>
-                <p className="text-lg text-gray-500">
+                <p className="text-lg text-slate-700">
                     Your resume was scanned like an employer would. Here's how it
                     performed:
                 </p>
                 {suggestions.map((suggestion, index) => (
-                    <div className="flex flex-row gap-2 items-center" key={index}>
+                    <div className="flex flex-row gap-3 items-start" key={index}>
                         <img
                             src={
                                 suggestion.type === "good"
@@ -49,12 +49,12 @@ const ATS = ({
                                     : "/icons/warning.svg"
                             }
                             alt="ATS"
-                            className="w-4 h-4"
+                            className="w-4 h-4 mt-1.5 shrink-0"
                         />
-                        <p className="text-lg text-gray-500">{suggestion.tip}</p>
+                        <p className="text-lg text-slate-700">{suggestion.tip}</p>
                     </div>
                 ))}
-                <p className="text-lg text-gray-500">
+                <p className="text-lg text-slate-700">
                     Want a better score? Improve your resume by applying the suggestions
                     listed below.
                 </p>

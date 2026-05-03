@@ -50,10 +50,10 @@ export default function Home() {
     }, []);
 
 
-    return <main className="bg-[url('/images/bg-main.svg')] bg-cover ">
+    return <main className="app-bg">
       <Navbar />
       <section className="main-section">
-          <div className="page-heading py-16">
+          <div className="page-heading py-12">
               <h1>Track Your Applications & Resume Ratings</h1>
               {!loadingResumes && resumes?.length === 0 ? (
                   <h2>No resumes found. Upload your first resume to get feedback.</h2>
@@ -63,7 +63,7 @@ export default function Home() {
           </div>
           {loadingResumes && (
               <div className="flex flex-col items-center justify-center">
-                  <img src="/images/resume-scan-2.gif" className="w-[200px]"/>
+                  <img src="/images/resume-scan-2.gif" className="w-[180px]"/>
               </div>
           )}
 

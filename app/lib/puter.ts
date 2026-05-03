@@ -74,7 +74,8 @@ interface PuterStore {
         ) => Promise<AIResponse | undefined>;
         feedback: (
             path: string,
-            message: string
+            message: string,
+            model?: string
         ) => Promise<AIResponse | undefined>;
         img2txt: (
             image: string | File | Blob,
@@ -92,12 +93,46 @@ interface PuterStore {
         flush: () => Promise<boolean | undefined>;
     };
 
-    init: () => void;
+    init: () => Promise<void>;
     clearError: () => void;
 }
 
 const getPuter = (): typeof window.puter | null =>
     typeof window !== "undefined" && window.puter ? window.puter : null;
+
+const PUTER_SCRIPT_ID = "puter-sdk-script";
+const PUTER_SCRIPT_SRC = "https://js.puter.com/v2/";
+
+const ensurePuterScript = async (): Promise<void> => {
+    if (typeof window === "undefined") return;
+    if (getPuter()) return;
+
+    const existing = document.getElementById(PUTER_SCRIPT_ID) as HTMLScriptElement | null;
+
+    if (existing) {
+        await new Promise<void>((resolve, reject) => {
+            if (getPuter()) {
+                resolve();
+                return;
+            }
+            existing.addEventListener("load", () => resolve(), { once: true });
+            existing.addEventListener("error", () => reject(new Error("Failed to load Puter.js")), { once: true });
+            setTimeout(() => reject(new Error("Timed out loading Puter.js")), 15000);
+        });
+        return;
+    }
+
+    await new Promise<void>((resolve, reject) => {
+        const script = document.createElement("script");
+        script.id = PUTER_SCRIPT_ID;
+        script.src = PUTER_SCRIPT_SRC;
+        script.async = true;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error("Failed to load Puter.js"));
+        document.body.appendChild(script);
+        setTimeout(() => reject(new Error("Timed out loading Puter.js")), 15000);
+    });
+};
 
 export const usePuterStore = create<PuterStore>((set, get) => {
     const setError = (msg: string) => {
@@ -241,28 +276,24 @@ export const usePuterStore = create<PuterStore>((set, get) => {
         }
     };
 
-    const init = (): void => {
-        const puter = getPuter();
-        if (puter) {
-            set({ puterReady: true });
-            checkAuthStatus();
+    const init = async (): Promise<void> => {
+        try {
+            await ensurePuterScript();
+        } catch (err) {
+            const msg =
+                err instanceof Error ? err.message : "Puter.js failed to load";
+            setError(msg);
             return;
         }
 
-        const interval = setInterval(() => {
-            if (getPuter()) {
-                clearInterval(interval);
-                set({ puterReady: true });
-                checkAuthStatus();
-            }
-        }, 100);
+        const puter = getPuter();
+        if (!puter) {
+            setError("Puter.js not available");
+            return;
+        }
 
-        setTimeout(() => {
-            clearInterval(interval);
-            if (!getPuter()) {
-                setError("Puter.js failed to load within 10 seconds");
-            }
-        }, 10000);
+        set({ puterReady: true, error: null });
+        await checkAuthStatus();
     };
 
     const write = async (path: string, data: string | File | Blob) => {
@@ -327,7 +358,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
         >;
     };
 
-    const feedback = async (path: string, message: string) => {
+    const feedback = async (path: string, message: string, model?: string) => {
         const puter = getPuter();
         if (!puter) {
             setError("Puter.js not available");
@@ -349,7 +380,8 @@ export const usePuterStore = create<PuterStore>((set, get) => {
                         },
                     ],
                 },
-            ]
+            ],
+            model ? { model } : undefined
         ) as Promise<AIResponse | undefined>;
     };
 
@@ -437,7 +469,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
                 testMode?: boolean,
                 options?: PuterChatOptions
             ) => chat(prompt, imageURL, testMode, options),
-            feedback: (path: string, message: string) => feedback(path, message),
+            feedback: (path: string, message: string, model?: string) => feedback(path, message, model),
             img2txt: (image: string | File | Blob, testMode?: boolean) =>
                 img2txt(image, testMode),
         },

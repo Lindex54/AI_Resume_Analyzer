@@ -242,5 +242,7 @@ export const prepareInstructions = ({
   The job title is: ${jobTitle}
   The job description is: ${jobDescription}
   Provide the feedback using the following format: ${AIResponseFormat}
+  Use realistic scores between 0 and 100 for each section based on actual resume quality.
+  Never output all section scores as 0 unless the resume cannot be read.
   Return the analysis as a JSON object, without any other text and without the backticks.
   Do not include any other text or comments.`;

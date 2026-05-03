@@ -19,10 +19,6 @@ export const links: Route.LinksFunction = () => [
     href: "https://fonts.gstatic.com",
     crossOrigin: "anonymous",
   },
-  {
-    rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
-  },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -40,6 +36,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        <script
+            dangerouslySetInnerHTML={{
+              __html: `(() => {
+  try {
+    const key = "resumind-theme";
+    const saved = localStorage.getItem(key);
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const mode = saved === "light" || saved === "dark" ? saved : (prefersDark ? "dark" : "light");
+    if (mode === "dark") document.documentElement.classList.add("dark");
+  } catch {}
+})();`,
+            }}
+        />
       </head>
       <body>
       <script src="https://js.puter.com/v2/"></script>

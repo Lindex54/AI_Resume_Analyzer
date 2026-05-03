@@ -33,7 +33,7 @@ const ScoreGauge = ({ score = 75 }: { score: number }) => {
                     <path
                         d="M10,50 A40,40 0 0,1 90,50"
                         fill="none"
-                        stroke="#e5e7eb"
+                        stroke="var(--border)"
                         strokeWidth="10"
                         strokeLinecap="round"
                     />

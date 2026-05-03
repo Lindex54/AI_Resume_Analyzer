@@ -5,87 +5,179 @@
 @theme {
     --font-sans: "Mona Sans", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    --color-dark-200: #475467;
-    --color-light-blue-100: #c1d3f81a;
-    --color-light-blue-200: #a7bff14d;
-
     --color-badge-green: #d5faf1;
     --color-badge-red: #f9e3e2;
     --color-badge-yellow: #fceed8;
-
     --color-badge-green-text: #254d4a;
     --color-badge-red-text: #752522;
     --color-badge-yellow-text: #73321b;
 }
 
+:root {
+    --bg: #f4f7ff;
+    --surface: #ffffff;
+    --surface-soft: #eef3ff;
+    --text: #101828;
+    --muted: #475467;
+    --border: #d6deee;
+    --primary-top: #6f7df6;
+    --primary-bottom: #4f5edc;
+    --primary-hover-top: #5d6cf1;
+    --primary-hover-bottom: #3f51d2;
+    --ring: rgba(102, 112, 133, 0.18);
+}
+
+html.dark {
+    --bg: #0b1222;
+    --surface: #111a2e;
+    --surface-soft: #18223b;
+    --text: #e7edf9;
+    --muted: #98a2b3;
+    --border: #24314d;
+    --primary-top: #7c8bff;
+    --primary-bottom: #6070ee;
+    --primary-hover-top: #8c99ff;
+    --primary-hover-bottom: #6a79f0;
+    --ring: rgba(175, 194, 255, 0.18);
+}
+
 html,
 body {
-    @apply bg-white;
+    min-height: 100%;
+}
+
+body {
+    color: var(--text);
+    background: radial-gradient(circle at 20% 15%, rgba(116, 143, 252, 0.16), transparent 45%),
+    radial-gradient(circle at 80% 0%, rgba(255, 145, 177, 0.16), transparent 35%),
+    var(--bg);
 }
 
 main {
     @apply min-h-screen pt-10;
 }
+
 h1 {
-    @apply max-sm:text-[3rem] text-6xl  text-gradient leading-tight xl:tracking-[-2px] font-semibold;
+    @apply max-sm:text-[2.8rem] text-6xl leading-tight xl:tracking-[-2px] font-semibold;
 }
 
 h2 {
-    @apply max-sm:text-xl text-3xl text-dark-200;
+    @apply max-sm:text-xl text-3xl;
+    color: var(--muted);
 }
 
 label {
-    @apply text-dark-200;
-}
-input {
-    @apply w-full p-4 inset-shadow rounded-2xl focus:outline-none bg-white;
+    color: var(--muted);
 }
 
+input,
 textarea {
-    @apply w-full p-4 inset-shadow rounded-2xl focus:outline-none bg-white;
+    @apply w-full p-4 rounded-2xl focus:outline-none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 20px -18px var(--ring), inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+    color: var(--text);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--muted);
+    opacity: 0.85;
 }
 
 form {
-    @apply flex flex-col items-start gap-8 w-full;
+    @apply flex flex-col items-start gap-6 w-full;
 }
 
 @layer components {
+    .app-bg {
+        background: radial-gradient(circle at 20% 15%, rgba(116, 143, 252, 0.15), transparent 45%),
+        radial-gradient(circle at 80% 5%, rgba(255, 145, 177, 0.15), transparent 35%),
+        var(--bg);
+    }
+
     .text-gradient {
-        @apply bg-clip-text text-transparent bg-gradient-to-r from-[#AB8C95] via-[#000000] to-[#8E97C5];
+        @apply bg-clip-text text-transparent;
+        background-image: linear-gradient(110deg, #5f76f7 0%, #ff88a8 45%, #4f5edc 100%);
     }
+
     .gradient-border {
-        @apply bg-gradient-to-b from-light-blue-100 to-light-blue-200 p-4 rounded-2xl;
+        @apply p-4 rounded-2xl;
+        background: linear-gradient(180deg, rgba(142, 152, 255, 0.22), rgba(124, 140, 255, 0.08));
+        border: 1px solid var(--border);
     }
+
     .primary-button {
-        @apply primary-gradient text-white rounded-full px-4 py-2 cursor-pointer w-full;
+        @apply text-white rounded-full px-5 py-2.5 cursor-pointer w-full font-semibold transition-all duration-200;
+        background: linear-gradient(180deg, var(--primary-top), var(--primary-bottom));
     }
+
+    .primary-button:hover {
+        background: linear-gradient(180deg, var(--primary-hover-top), var(--primary-hover-bottom));
+        transform: translateY(-1px);
+    }
+
+    .primary-button:focus-visible {
+        outline: 2px solid color-mix(in oklab, var(--primary-top) 65%, white 35%);
+        outline-offset: 2px;
+    }
+
     .resume-nav {
-        @apply flex flex-row justify-between items-center p-4 border-b border-gray-200;
+        @apply flex flex-row justify-between items-center p-4 border-b;
+        border-color: var(--border);
+        background: color-mix(in oklab, var(--surface) 95%, transparent);
+        backdrop-filter: blur(10px);
     }
+
     .resume-summary {
         @apply flex flex-row items-center justify-center p-4 gap-4;
-        .category {
-            @apply flex flex-row gap-2 items-center bg-gray-50 rounded-2xl p-4 w-full justify-between;
-        }
     }
+
+    .resume-summary .category {
+        @apply flex flex-row gap-2 items-center rounded-2xl p-4 w-full justify-between;
+        background: var(--surface-soft);
+        border: 1px solid var(--border);
+    }
+
     .back-button {
-        @apply flex flex-row items-center gap-2 border border-gray-200 rounded-lg p-2 shadow-sm;
+        @apply flex flex-row items-center gap-2 rounded-lg p-2;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text);
     }
+
     .auth-button {
-        @apply primary-gradient rounded-full py-4 px-8 cursor-pointer w-[600px] max-md:w-full text-3xl font-semibold text-white;
+        @apply rounded-full py-4 px-8 cursor-pointer w-[600px] max-md:w-full text-3xl font-semibold text-white transition-all duration-200;
+        background: linear-gradient(180deg, var(--primary-top), var(--primary-bottom));
     }
+
+    .auth-button:hover {
+        background: linear-gradient(180deg, var(--primary-hover-top), var(--primary-hover-bottom));
+        transform: translateY(-1px);
+    }
+
     .main-section {
-        @apply flex flex-col items-center gap-8 pt-12 max-sm:mx-2 mx-15 pb-5;
+        @apply flex flex-col items-center gap-8 pt-10 max-sm:mx-2 mx-6 lg:mx-10 pb-10 w-full;
     }
+
     .page-heading {
-        @apply flex flex-col items-center gap-8 max-w-4xl text-center max-sm:gap-4;
+        @apply flex flex-col items-center gap-6 max-w-4xl text-center max-sm:gap-4;
     }
+
     .resumes-section {
-        @apply flex flex-wrap max-md:flex-col max-md:gap-4 gap-6 items-start max-md:items-center w-full max-w-[1850px] justify-evenly;
+        @apply grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6 w-full max-w-[1600px] place-items-center;
     }
 
     .resume-card {
-        @apply flex flex-col gap-8 h-[560px] w-[350px] lg:w-[430px] xl:w-[490px] bg-white rounded-2xl p-4;
+        @apply flex flex-col gap-6 min-h-[470px] w-full max-w-[490px] rounded-2xl p-4 transition-all duration-300;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        box-shadow: 0 18px 35px -28px var(--ring);
+    }
+
+    .resume-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 26px 48px -32px var(--ring);
     }
 
     .resume-card-header {
@@ -93,53 +185,50 @@ form {
     }
 
     .feedback-section {
-        @apply flex flex-col gap-8 w-1/2 px-8 max-lg:w-full py-6;
+        @apply flex flex-col gap-6 w-1/2 px-6 xl:px-8 max-lg:w-full py-6;
     }
 
     .navbar {
-        @apply flex flex-row justify-between items-center bg-white rounded-full p-4 w-full px-10 max-w-[1200px] mx-auto;
+        @apply flex flex-row justify-between items-center rounded-full p-3 w-full px-4 sm:px-6 max-w-[1200px] mx-auto;
+        background: color-mix(in oklab, var(--surface) 96%, transparent);
+        border: 1px solid var(--border);
+        backdrop-filter: blur(10px);
     }
 
-    .score-badge {
-        @apply flex flex-row items-center justify-center py-1 px-2 gap-4 rounded-[96px];
+    .theme-toggle {
+        @apply inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold transition-colors;
+        border: 1px solid var(--border);
+        color: var(--text);
+        background: var(--surface-soft);
+    }
+
+    .theme-toggle:hover {
+        background: color-mix(in oklab, var(--surface-soft) 70%, var(--primary-top) 30%);
+    }
+
+    .theme-icon {
+        @apply inline-flex items-center justify-center text-[10px] font-bold leading-none;
+    }
+
+    .surface-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        box-shadow: 0 18px 35px -28px var(--ring);
+    }
+
+    .text-muted {
+        color: var(--muted);
     }
 
     .form-div {
         @apply flex flex-col gap-2 w-full items-start;
     }
 
-    .uplader-drag-area {
-        @apply relative p-8 text-center transition-all duration-700 cursor-pointer bg-white rounded-2xl min-h-[208px];
-    }
     .uploader-selected-file {
-        @apply flex items-center justify-between p-3 bg-gray-50 rounded-2xl;
+        @apply flex items-center justify-between p-3 rounded-2xl;
+        background: var(--surface-soft);
+        border: 1px solid var(--border);
     }
-}
-
-@utility bg-gradient {
-    background: linear-gradient(to bottom, #f0f4ff 60%, #fa7185cc);
-}
-
-@utility text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#AB8C95] via-[#000000] to-[#8E97C5];
-}
-
-@utility gradient-hover {
-    @apply bg-gradient-to-b from-light-blue-100 to-light-blue-200;
-}
-
-@utility primary-gradient {
-    background: linear-gradient(to bottom, #8e98ff, #606beb);
-    box-shadow: 0px 74px 21px 0px #6678ef00;
-}
-
-@utility primary-gradient-hover {
-    background: linear-gradient(to bottom, #717dff, #4957eb);
-}
-
-@utility inset-shadow {
-    box-shadow: inset 0 0 12px 0 rgba(36, 99, 235, 0.2);
-    backdrop-filter: blur(10px);
 }
 
 @keyframes fadeIn {
